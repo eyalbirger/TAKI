@@ -16,7 +16,7 @@ class player:
     
 
   def addCard(self, pile):
-    drawn_card = pile.pop()
+    drawn_card = pile.take()
     if drawn_card:
         self.deck.append(drawn_card)
     return None
@@ -37,4 +37,13 @@ class player:
     for count, card in enumerate(self.deck):
       x = startPos + (count * cards_width)
       Cards.draw_card(surface, card,  x ,y)
+
+
+  def get_clicked_card(self, mouse_pos):
+    for card in reversed(self.deck):
+      if hasattr(card, 'rect') and card.rect and card.rect.collidepoint(mouse_pos):
+        return card
+
     return None
+
+  

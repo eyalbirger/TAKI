@@ -55,15 +55,19 @@ class Plus2(Card):
 
 class SuperTakiCard(TakiCard):
     
-    def __init__(self, color, val ="STAKI"):
+    def __init__(self, color = "colorless", val ="STAKI"):
         super().__init__(color, "STAKI")
 
 class KingCard(Card):
-    def __init__(self, color):
+    def __init__(self, color = "colorless"):
         super().__init__(color, "KING")
 
-class BackOfTheCard(Card):
-    def __init__(self, color, val = "empty"):
+class ColorChangeCard(Card):
+    def __init__(self, color = "colorless"):
+        super().__init__(color, "CC") # CC = Color Change
+
+class Blank(Card):
+    def __init__(self, color, val = "BLANK"):
         super().__init__("grey", val)
 
       
@@ -86,11 +90,10 @@ class TakePile:
                 fullpile.append(Plus2(color))
                 fullpile.append(ChangeDirectionCard(color))
                 fullpile.append(TakiCard(color))
-
-        fullpile.append(KingCard("green"))
-        fullpile.append(SuperTakiCard("red"))
-        fullpile.append(KingCard("blue"))
-        fullpile.append(SuperTakiCard("yellow"))
+        for j in range(2):
+            fullpile.append(KingCard("colorless"))
+            fullpile.append(SuperTakiCard("colorless"))
+            fullpile.append(ColorChangeCard("colorless"))
 
         random.shuffle(fullpile)
         return fullpile
@@ -113,6 +116,7 @@ class ThrowPile:
 
     def receive(self, card):
         self.cards.append(card)
+        return None
 
 # for game logic
 def draw_card(surface, card, x, y, width = 40, height = 60):
@@ -135,3 +139,28 @@ def draw_card(surface, card, x, y, width = 40, height = 60):
   text_rect = text_surface.get_rect(center = card_rect.center)
 
   surface.blit(text_surface, text_rect)
+
+  return card_rect
+
+def draw_blank(surface, x, y, width = 40, height = 60):
+  
+  bg_color = (150, 150, 150)
+  card_rect = pygame.Rect(x, y, width, height)
+
+  pygame.draw.rect(surface, bg_color, card_rect, border_radius = 8)
+
+  return card_rect
+
+
+def is_valid_play(played_card, top_card):
+    if top_card is None:
+        return True
+    if played_card.color == "colorless":
+        return True
+    if played_card.color == top_card.color:
+        return True
+    if str(played_card.val) == str(top_card.val):
+        return True
+
+    return False
+    
