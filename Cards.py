@@ -49,37 +49,36 @@ class TakiCard(Card):
 
 class Plus2(Card):
 
-    def __init__(self, color):
+    def __init__(self, color, val="+2"):
         super().__init__(color, "+2")
 
 
 class SuperTakiCard(TakiCard):
     
-    def __init__(self, color):
-        super().__init__(color, "S-TAKI")
+    def __init__(self, color, val ="STAKI"):
+        super().__init__(color, "STAKI")
 
 class KingCard(Card):
     def __init__(self, color):
         super().__init__(color, "KING")
 
 class BackOfTheCard(Card):
-    def __init__(self, color):
-        super().__init__(color)
+    def __init__(self, color, val = "empty"):
+        super().__init__("grey", val)
 
       
-        
+
 class TakePile:
 
     def __init__(self):
         self.cards = self.create_pile()
-        random.shuffle(self.cards)
 
     #creating the deck
     @staticmethod
     def create_pile():
         fullpile = []
         for color in COLOR_PALETTE:
-            for i in range(1, 10):  # Creates numbers 1-9 for each color
+            for i in range(1, 10):  
                 fullpile.append(NumCard(color, i))
 
             for j in range(2):
@@ -90,7 +89,10 @@ class TakePile:
 
         fullpile.append(KingCard("green"))
         fullpile.append(SuperTakiCard("red"))
+        fullpile.append(KingCard("blue"))
+        fullpile.append(SuperTakiCard("yellow"))
 
+        random.shuffle(fullpile)
         return fullpile
 
     def take(self):
@@ -98,6 +100,10 @@ class TakePile:
             return self.cards.pop()
         return None
 
+    def isEmpty(self):
+        if len(self.cards) == 0:
+            return True
+        return False
 
 
 class ThrowPile:
@@ -109,7 +115,7 @@ class ThrowPile:
         self.cards.append(card)
 
 # for game logic
-def draw_card(surface, card, x, y, width = 40, height = 60,):
+def draw_card(surface, card, x, y, width = 40, height = 60):
   CARDCOLORS = {
       'red': (255, 0, 0),
       'blue': (0, 0, 255),
@@ -119,7 +125,6 @@ def draw_card(surface, card, x, y, width = 40, height = 60,):
   }
 
   bg_color = CARDCOLORS.get(card.color, (150, 150, 150))
-
   card_rect = pygame.Rect(x, y, width, height)
   card.rect = card_rect
 

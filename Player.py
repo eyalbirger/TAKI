@@ -1,34 +1,40 @@
 import Cards
 import pygame
-import tkinter as tk
+#import tkinter as tk
 
+#TK_SILENCE_DEPRECATION=1
 
-root = tk.Tk()
-SCREEN_WIDTH = root.winfo_screenwidth()
-SCREEN_HEIGHT = root.winfo_screenheight()
+#root = tk.Tk()
+SCREEN_WIDTH = 800#root.winfo_screenwidth
+SCREEN_HEIGHT = 800#root.winfo_screenheight
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-root.destroy()
+#root.destroy()
 
 class player:
   def __init__(self):
     self.deck = []
     
 
-  def addCard(self):
-    self.deck.append(Cards.TakePile.take())
+  def addCard(self, pile):
+    drawn_card = pile.pop()
+    if drawn_card:
+        self.deck.append(drawn_card)
     return None
 
-  def drawDeck(self, surface):
+  def drawDeck(self, surface, playernum):
     if not self.deck:
-      return
+      return None
 
     cards_width = 40
-    y = SCREEN_HEIGHT*0.75
+    if playernum == 1:
+      y = SCREEN_HEIGHT*0.75
+    else:
+      y = SCREEN_HEIGHT*0.25
 
     length = len(self.deck) * cards_width
     startPos =  SCREEN_WIDTH / 2 - (length / 2)
 
     for count, card in enumerate(self.deck):
       x = startPos + (count * cards_width)
-      Cards.draw_card(surface, card.color, card, x ,y)
+      Cards.draw_card(surface, card,  x ,y)
     return None
