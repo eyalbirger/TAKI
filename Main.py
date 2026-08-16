@@ -33,7 +33,7 @@ for i in range (8):
   player1.addCard(takePile)
   player2.addCard(takePile)
 
-
+ 
 
 
 # Main Game Loop
