@@ -72,19 +72,20 @@ while running:
                     if Cards.is_valid_play(clicked_card, top_card):
                         player1.deck.remove(clicked_card)
                         throwPile.receive(clicked_card)
+                            
                         
 
     # 2. Game Logic / Updates
     # (Update positions, check collisions, etc.)
-
+    
     # 3. Drawing
     screen.fill((0, 0, 0))  # Clear screen with background color
 
     #this is the players names
-    if turn == name1:
+    if turn == name2:
         text_surface1 = font.render(name1, True, (255, 255, 0))
         text_surface2 = font.render(name2, True, (255, 255, 255))
-    elif turn == name2:
+    elif turn == name1:
         text_surface1 = font.render(name1, True, (255, 255, 255))
         text_surface2 = font.render(name2, True, (255, 255, 0))
 
