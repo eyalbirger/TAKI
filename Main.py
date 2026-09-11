@@ -41,16 +41,14 @@ for i in range (8):
   player2.addCard(takePile)
 
 
-for i in takePile.cards:
-    if not isinstance(takePile.cards[-1], Cards.NumCard):
-        throwPile.receive(takePile.take())
-        break
+while not isinstance(takePile.cards[-1], Cards.NumCard):
+    random.shuffle(takePile.cards)
 
 throwPile.receive(takePile.take())
 
 
-name1 = "player1"
-name2 = "player2"
+name1 = "Player1"
+name2 = "Player2"
 
 font = pygame.font.SysFont("Arial", 36, bold = True)
 
@@ -61,6 +59,8 @@ names = (name1, name2)
 turn = random.choice(names)
 
 takiopen = False
+plus2Counter = 0
+
 
 twoOrMoreCards = (Cards.TakiCard, 
                   Cards.PlusCard, 
@@ -81,37 +81,62 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+        
         #now the fucking events
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_pos = event.pos
 
+            close_rect = pygame.Rect(SCREEN_WIDTH * 0.1 - 40, SCREEN_HEIGHT/2-20, 80, 40)
+            if takiopen and close_rect.collidepoint(mouse_pos):
+                takiopen = False
+                turn = next_turn
+                continue
+            
             if takepile_rect and takepile_rect.collidepoint(event.pos):
-                if turn == name1:
-                    player1.addCard(takePile)
-                    turn = name2
-                elif turn == name2:
-                    player2.addCard(takePile)
-                    turn = name1
+                if plus2Counter > 0:
+                    for i in range (plus2Counter):
+                        current_player.addCard(takePile)
+                    plus2Counter = 0
+                else:
+                    current_player.addCard(takePile)
+                if takiopen:
+                    takiopen = False
+                turn = next_turn
 
             else:
             
                 clicked_card = current_player.get_clicked_card(mouse_pos)
                 if clicked_card:
                     top_card = throwPile.cards[-1] if throwPile.cards else None
+                    if plus2Counter > 0 and not isinstance(clicked_card, Cards.Plus2):
+                        continue
+                    
 
                     if Cards.is_valid_play(clicked_card, top_card):
                         current_player.deck.remove(clicked_card)
                         throwPile.receive(clicked_card)
 
-                        if isinstance(clicked_card, twoOrMoreCards):
-                            if isinstance(clicked_card, (Cards.SuperTakiCard, Cards.TakiCard)):
-                                takiopen = True
-                                if not current_player.colorMatch(clicked_card):
-                                   turn = next_turn
-                        
+                        # taki
+                        if isinstance(clicked_card, (Cards.SuperTakiCard, Cards.TakiCard)):
+                            takiopen = True
+                            if not current_player.colorMatch(throwPile.cards[-1]):
+                               takiopen = False
+                               turn = next_turn
+
+                        # +2
+                        elif isinstance(clicked_card, Cards.Plus2):
+                            plus2Counter += 2
+                            if takiopen and not current_player.colorMatch(throwPile.cards[-1]):
+                                takiopen = False
+                            turn = next_turn
+
                         else:
-                            if not takiopen or not isinstance(clicked_card, (Cards.TakiCard, Cards.SuperTakiCard)):
+                            if not takiopen and not isinstance (clicked_card, (Cards.ChangeDirectionCard, Cards.PlusCard)):
                                 turn = next_turn
+
+                        
+
+                            
 
                                 
 
@@ -129,13 +154,19 @@ while running:
         text_surface1 = font.render(name1, True, (255, 255, 255))
         text_surface2 = font.render(name2, True, (255, 255, 0))
 
-    
-
     text_rect1 = text_surface1.get_rect(center= (SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.1))
     text_rect2 = text_surface2.get_rect(center= (SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.9))
 
+
+    if takiopen:
+        close_text = font.render("Close", True, (255, 255, 255))
+    else:
+        close_text = font.render("Close", True, (0, 0, 0))
+    close_rect = close_text.get_rect(center= (SCREEN_WIDTH * 0.1, SCREEN_HEIGHT/2))
+
     screen.blit(text_surface1, text_rect1)
     screen.blit(text_surface2, text_rect2)
+    screen.blit(close_text, close_rect)
 
     
     # Draw elements here

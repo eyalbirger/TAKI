@@ -161,6 +161,10 @@ def is_valid_play(played_card, top_card):
         return True
     if str(played_card.val) == str(top_card.val):
         return True
+    if isinstance(top_card, Plus2):
+        if isinstance(played_card, Plus2):
+            return True
+        return False
 
     return False
     
