@@ -38,6 +38,11 @@ class player:
       x = startPos + (count * cards_width)
       Cards.draw_card(surface, card,  x ,y)
 
+  def colorMatch(self, clicked_card):
+    for i in self.deck:
+      if str(clicked_card.color) == str(i.color):
+        return True
+    return False
 
   def get_clicked_card(self, mouse_pos):
     for card in reversed(self.deck):

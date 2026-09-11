@@ -157,7 +157,7 @@ def is_valid_play(played_card, top_card):
         return True
     if played_card.color == "colorless":
         return True
-    if played_card.color == top_card.color:
+    if str(played_card.color) == str(top_card.color):
         return True
     if str(played_card.val) == str(top_card.val):
         return True

@@ -3,7 +3,13 @@ import Player
 import pygame
 import sys
 import random
-#import tkinter 
+import game as gm
+
+
+
+
+
+    
 
 # Initialize Pygame
 pygame.init()
@@ -34,19 +40,42 @@ for i in range (8):
   player1.addCard(takePile)
   player2.addCard(takePile)
 
+
+for i in takePile.cards:
+    if not isinstance(takePile.cards[-1], Cards.NumCard):
+        throwPile.receive(takePile.take())
+        break
+
 throwPile.receive(takePile.take())
 
 
 name1 = "player1"
 name2 = "player2"
-font = pygame.font.SysFont("Arial", 36, bold = True)
 
+font = pygame.font.SysFont("Arial", 36, bold = True)
 
 # Main Game Loop
 takepile_rect = None
-turn = random.choice([name1, name2])
+
+names = (name1, name2)
+turn = random.choice(names)
+
+takiopen = False
+
+twoOrMoreCards = (Cards.TakiCard, 
+                  Cards.PlusCard, 
+                  Cards.ChangeDirectionCard, 
+                  Cards.KingCard, 
+                  Cards.SuperTakiCard)
+
 running = True
 while running:
+    if turn == name1:
+        current_player = player1
+        next_turn = name2
+    else:
+        current_player = player2
+        next_turn = name1
     # 1. Event Handling
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -65,15 +94,26 @@ while running:
                     turn = name1
 
             else:
-                clicked_card = player1.get_clicked_card(mouse_pos)
+            
+                clicked_card = current_player.get_clicked_card(mouse_pos)
                 if clicked_card:
                     top_card = throwPile.cards[-1] if throwPile.cards else None
 
                     if Cards.is_valid_play(clicked_card, top_card):
-                        player1.deck.remove(clicked_card)
+                        current_player.deck.remove(clicked_card)
                         throwPile.receive(clicked_card)
-                            
+
+                        if isinstance(clicked_card, twoOrMoreCards):
+                            if isinstance(clicked_card, (Cards.SuperTakiCard, Cards.TakiCard)):
+                                takiopen = True
+                                if not current_player.colorMatch(clicked_card):
+                                   turn = next_turn
                         
+                        else:
+                            if not takiopen or not isinstance(clicked_card, (Cards.TakiCard, Cards.SuperTakiCard)):
+                                turn = next_turn
+
+                                
 
     # 2. Game Logic / Updates
     # (Update positions, check collisions, etc.)
@@ -88,6 +128,8 @@ while running:
     elif turn == name1:
         text_surface1 = font.render(name1, True, (255, 255, 255))
         text_surface2 = font.render(name2, True, (255, 255, 0))
+
+    
 
     text_rect1 = text_surface1.get_rect(center= (SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.1))
     text_rect2 = text_surface2.get_rect(center= (SCREEN_WIDTH/2, SCREEN_HEIGHT * 0.9))
